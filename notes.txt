@@ -1,0 +1,99 @@
+mogens@kayju.com
+tisimst.lilypond@gmail.com
+lilylis@lionunicorn.co.uk
+lily.user@chubb.wattle.id.au
+
+
+
+Thanks for all the suggestions.
+
+Mogens, I didn't realize that some of this could be done from a print dialog.
+For easy patterns this is a nice short path.
+
+David, I think that your approach is most in line with the production
+process I'd like.  Thanks especially for your order-computing functions!
+
+Peter, I will also look at pdfbook to see how it compares to pdftk and
+whether that is more appropriate.
+
+
+Abraham, those PDF-BatchBooklet utitilies look like precisely what I need, although in a UI rather than text/command line.  
+https://www.nycmusicservices.com/musicresources/
+
+I'm curious, does your interface rely on some of these same dependencies pdftk, pdfjam, pdfbook, pdfinfo?  
+
+
+
+Now to get those dependencies installed...
+
+
+
+
+Now I use pdfjam and pdftk; the former for tiling, scaling
+and shifts, the latter for things that involve whole pages.
+
+But pdfjam can do the page-shuffling if given the ordering, so for
+what you're intending, I would just use that. 
+
+
+ the ordering
+in bash with my own functions as I need variants for handing A6
+booklets that save paper by stacking two copies.
+
+I've stripped out some housekeeping functions etc, hopefully without
+introducing typos. There are dependencies like TeX, pdfinfo, awk,
+and bash of course.
+
+These two functions are for generating the page ordering which is for
+double-sided printing.
+
+function -sig {
+    local NUMPAGES="$(pdfinfo "$1" | awk '{if ( /^Pages:/ ) printf ( "%s", $2 )}')"
+    [ -z $NUMPAGES ] && printf '%s\n' "$1 has no pages!" >&2 && return 1
+    local ROUNDUP=$NUMPAGES
+    local REMAINDER=$(( $NUMPAGES % 4 ))
+    [ $REMAINDER != 0 ] && ROUNDUP=$(( $NUMPAGES + 4 - $REMAINDER ))
+    local DOWNS=$(( $ROUNDUP / 2 ))
+    local UPS=$(( $DOWNS + 1 ))
+    echo -n $(-sigger $DOWNS $NUMPAGES),$(-sigger $UPS $NUMPAGES)
+    while DOWNS=$(( $DOWNS - 1 )) ; UPS=$(( $UPS + 1 )) ; [ $DOWNS -gt 0 ] ; do
+        if [ $(( $DOWNS % 2 )) = 0 ] ; then
+            echo -n ,$(-sigger $DOWNS $NUMPAGES),$(-sigger $UPS $NUMPAGES)
+        else
+            echo -n ,$(-sigger $UPS $NUMPAGES),$(-sigger $DOWNS $NUMPAGES)
+        fi
+    done
+}
+
+function -sigger {
+    local DIFF=$(( $1 - $2 ))
+    if [ $DIFF -gt 0 -o $1 -lt 1 ] ; then
+        echo -n {}
+    else
+        echo -n $1
+    fi
+}
+
+# These do the work (A4→A3r and US Letter→Ledger):
+
+function a4-a4booklet {
+    pdfjam --nup '2x1' --landscape --noautoscale 'true' --scale 1 --paper 'a3paper' --outfile "${1/%.pdf/-a4booklet-a3.pdf}" "$1" "$(-sig "$1")"
+}
+
+function letter-letterbooklet {
+    pdfjam --nup '2x1' --landscape --noautoscale 'true' --scale 1 --papersize '{11in,17in}' --outfile "${1/%.pdf/-letterbooklet-ledger.pdf}" "$1" "$(-sig "$1")"
+}
+
+You might find these useful for proofreading the layout, ie putting
+pagespreads onto the screen to look at page balance/visual effects.
+
+function a4-a4spreads {
+    pdfjam --nup '2x1' --landscape --noautoscale 'true' --scale 1 --paper 'a3paper' --outfile "${1/%.pdf/-a4spreads-a3.pdf}" "$1" 2-last,1
+}
+
+function letter-letterspreads {
+    pdfjam --nup '2x1' --landscape --noautoscale 'true' --scale 1 --papersize '{11in,17in}' --outfile "${1/%.pdf/-letterspreads-ledger.pdf}" "$1" 2-last,1
+}
+
+Cheers,
+David.
