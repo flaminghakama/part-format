@@ -4,6 +4,7 @@ import argparse
 from datetime import datetime
 import os.path
 from PyPDF2 import PdfFileWriter, PdfFileReader
+import layoutFormats
 
 #  Parse the command line
 parser = argparse.ArgumentParser(description='Process file and layout format specifications')
@@ -21,44 +22,10 @@ else:
     outputFilePrefix = defaultOutputFilePrefix
     print "Using default output file prefix:" + outputFilePrefix
 
-#  Define the valid page formats
-validPageFormats = {
-	'1': 'valid', 
-	'1L': 'valid', 
-	'1R': 'valid', 
-	'2': 'valid', 
-	'2L': 'valid', 
-	'2R': 'valid', 
-	'3': 'valid', 
-	'4': 'valid',
-	'5': 'valid', 
-	'5L': 'valid', 
-	'5R': 'valid', 
-	'6': 'valid',
-	'6L': 'valid',
-	'6R': 'valid', 
-	'7': 'valid', 
-	'8': 'valid', 
-	'9': 'valid',
-	'9L': 'valid', 
-	'9R': 'valid', 
-	'10': 'valid', 
-	'10L': 'valid', 
-	'10R': 'valid', 
-	'11': 'valid', 
-	'12': 'valid'
-}
-
 #  Count the number of pages in a file
 def getNumberOfPages(file):
 	fileReader = PdfFileReader(open(file, "rb"))
 	return str(fileReader.getNumPages())
-
-#  Determine the order of pages
-outsidePages = []
-insidePages = [] 
-def enqueuePages(file, layoutFormat):
-	return 'no enqueuing going on yet' 
 
 #  Evaluate the file and format specs
 thisFile = 'no file specified'
@@ -74,16 +41,47 @@ for arg in args.input:
 			if thisFile != 'no file specified':
 				layoutFormat[thisFile] = arg
 			else:
-				print "ignoring layout format " + arg + " because no files have been specified"
+				print 'ignoring layout format ' + arg + ' because no files have been specified'
 		else:
 			print 'argument was neither file nor layout format: ' + arg
 
+
+def isSideSpecified(format):
+	return 'L' in format || 'R' in format
+
+
 #  Gather pages in the right orders
+outsidePages = []
+insidePages = [] 
+outsideCompositePages = []
+insideCompositePages = []
+nextHalfPageSide = 'L'
+def enqueuePages(file, layoutFormat):
+
+	#  Determine the page sequence 
+
+	if ( validPageFormats.get(layoutFormat) == 'half' ) && isSideSpecified(layoutFormat):
+		#  Do something with the already-specified half page
+	else:
+		if validPageFormats.get(layoutFormat) == 'determine side':
+			if nextHalfPageSide == 'L': 
+				layoutFormat = layoutFormat + 'L' 
+				nextHalfPageSide = 'R'
+			else:
+				layoutFormat = layoutFormat + 'R'
+				nextHalfPageSide = 'L' 
+
+
 if len(files) > 0:
 	for file in files:
 		if layoutFormat[file] == 'default':
 			layoutFormat[file] = getNumberOfPages(file)
-		print "file " + file + " has format " + layoutFormat[file]
+		print 'file ' + file + ' has format ' + layoutFormat[file]
 		# enqueuePages(file, layoutFormat[file])
 else:
 	print "No files specified"
+
+#  Perpare output
+def showContents(file):
+	print 'No showing going on yet'
+

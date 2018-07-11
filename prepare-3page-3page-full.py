@@ -1,6 +1,5 @@
-# prepare-3page-5page-full.py
 
-# prepare-3Page-5Page-full.py input1.pdf input2.pdf output.pdf 
+# prepare-3Page-3Page-full.py input1.pdf input2.pdf output.pdf 
 
 import sys
 from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
@@ -25,11 +24,9 @@ outputWriterOne.addPage(inputReaderOne.getPage(1))
 outputStreamOne = file(outputOneFileName, "wb")
 outputWriterOne.write(outputStreamOne)
 
-# From 5-page part, a file for pages 1,2 & 5
+# From 3-page part, a file for pages 1-2
 outputWriterTwo.addPage(inputReaderTwo.getPage(0))
 outputWriterTwo.addPage(inputReaderTwo.getPage(1))
-outputWriterTwo.addPage(inputReaderTwo.getPage(4))
-outputWriterTwo.insertBlankPage()
 outputStreamTwo = file(outputTwoFileName, "wb")
 outputWriterTwo.write(outputStreamTwo)
 
