@@ -25,8 +25,8 @@
 #  Otherwise, the printing order is intended for automatic double-sided printing:
 #    Outward outside
 #    Inward outside
+#    Iward inside
 #    Outward inside
-#    Inward inside
 
 import sys
 from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
@@ -44,19 +44,20 @@ pageIndex[1] = 7
 pageIndex[2] = 0
 
 if sys.argv[3] == "manual":
-	pageIndex[3] = 5
-	pageIndex[4] = 2
-	pageIndex[5] = 1
-	pageIndex[6] = 6
+    pageIndex[3] = 1
+    pageIndex[4] = 6
+    pageIndex[5] = 5
+    pageIndex[6] = 2
+    pageIndex[7] = 3 
+    pageIndex[8] = 4
 
 else:
-	pageIndex[3] = 1
-	pageIndex[4] = 6
-	pageIndex[5] = 5
-	pageIndex[6] = 2
-
-pageIndex[7] = 3 
-pageIndex[8] = 4
+    pageIndex[3] = 5
+    pageIndex[4] = 2
+    pageIndex[5] = 3
+    pageIndex[6] = 4
+    pageIndex[7] = 1
+    pageIndex[8] = 6
 
 outputWriterOne.addPage(inputReaderOne.getPage(pageIndex[1]))
 outputWriterOne.addPage(inputReaderOne.getPage(pageIndex[2]))
