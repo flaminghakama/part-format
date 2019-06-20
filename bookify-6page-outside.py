@@ -17,6 +17,6 @@ outputWriterOne.addPage(inputReaderOne.getPage(5))
 outputWriterOne.addPage(inputReaderOne.getPage(0))
 outputWriterOne.addPage(inputReaderOne.getPage(1))
 outputWriterOne.addPage(inputReaderOne.getPage(4))
-# outputWriterOne.insertBlankPage()
+
 outputStreamOne = file(outputOneFileName, "wb")
 outputWriterOne.write(outputStreamOne)

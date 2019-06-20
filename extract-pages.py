@@ -19,7 +19,8 @@ while (argumentCount >= position):
     else:
     	pageNumber = int(argument)
         print ("    adding page %i" % (pageNumber))
-        outputWriter.addPage(inputReader.getPage(pageNumber))
+        pageIndex = pageNumber - 1
+        outputWriter.addPage(inputReader.getPage(pageIndex))
     position = position + 1
 
 outputStream = file(outputFileName, "wb")
