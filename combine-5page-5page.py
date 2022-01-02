@@ -1,6 +1,6 @@
-# combine-5page-3page.py
+# combine-5page-5page.py
 
-# combine-5page-3page.py input1.pdf input2.pdf output.pdf
+# combine-5page-page.py input1.pdf input2.pdf output.pdf
 # combine two files, so that their last pages split a tabloid page
 
 import sys
